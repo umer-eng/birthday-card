@@ -1,5 +1,57 @@
 import { useState } from "react";
+import FloatingEmojis from "./FloatingEmojis";
 import "./App.css";
+
+// ==========================================
+// QUIZ DATA ARRAY (5 QUESTIONS)
+// ==========================================
+const quizQuestions = [
+  {
+    id: 1,
+    question: "How well do you know me? 👀",
+    options: [
+      { text: "💙 You know me really well", correct: true },
+      { text: "😭 Maybe I need to give you hints", correct: false },
+      { text: "😂 I'm just here for the fun", correct: false }
+    ]
+  },
+  {
+    id: 2,
+    question: "Who is the most special person? 💖",
+    options: [
+      { text: "You! 💖", correct: true },
+      { text: "Me 😎", correct: false },
+      { text: "Everyone 🌍", correct: false }
+    ]
+  },
+  {
+    id: 3,
+    question: "What makes you happiest? ✨",
+    options: [
+      { text: "Gifts 🎁", correct: false },
+      { text: "Good Food 🍕", correct: false },
+      { text: "Spending time together ✨", correct: true }
+    ]
+  },
+  {
+    id: 4,
+    question: "What's our favorite thing to do? 💬",
+    options: [
+      { text: "Late night talks & gossip 🌙", correct: true },
+      { text: "Studying hard all day 📚", correct: false },
+      { text: "Fighting over small things 👊", correct: false }
+    ]
+  },
+  {
+    id: 5,
+    question: "How special are you to me? 🌟",
+    options: [
+      { text: "Just a regular friend 🙃", correct: false },
+      { text: "More than words can say! 💙✨", correct: true },
+      { text: "A little bit special 🤏", correct: false }
+    ]
+  }
+];
 
 function App() {
   const [screen, setScreen] = useState("welcome");
@@ -7,7 +59,11 @@ function App() {
   const [showNoMessage, setShowNoMessage] = useState(false);
   const [noStep, setNoStep] = useState(0);
 
+  // Quiz States
   const [quizScore, setQuizScore] = useState(0);
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
 
   /* =========================
      BACK BUTTON
@@ -43,8 +99,12 @@ function App() {
         setScreen("gifts");
         break;
 
-      case "final":
+      case "pre-final":
         setScreen("gifts");
+        break;
+
+      case "final":
+        setScreen("pre-final");
         break;
 
       default:
@@ -95,26 +155,45 @@ function App() {
 
 
   /* =========================
-     QUIZ
+     DYNAMIC QUIZ HANDLERS
   ========================= */
 
   const startQuiz = () => {
     setQuizScore(0);
+    setCurrentQuizIndex(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
     setScreen("quiz");
   };
 
-  const answerQuiz = (correct) => {
-    const newScore = correct
-      ? quizScore + 1
-      : quizScore;
+  const handleOptionClick = (index, isCorrect) => {
+    if (isAnswered) return;
 
-    setQuizScore(newScore);
-    setScreen("result");
+    setSelectedOption(index);
+    setIsAnswered(true);
+
+    if (isCorrect) {
+      setQuizScore((prev) => prev + 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuizIndex < quizQuestions.length - 1) {
+      setCurrentQuizIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+    } else {
+      setScreen("result");
+    }
   };
 
 
   return (
-    <div className="birthday-app">
+    <div className="birthday-app" style={{ position: "relative" }}>
+
+      {/* Dynamic Background Floating Emojis */}
+      <FloatingEmojis />
+
 
       {/* =================================================
           WELCOME SCREEN
@@ -122,22 +201,6 @@ function App() {
 
       {screen === "welcome" && (
         <section className="welcome-screen">
-
-          <div className="floating-emoji emoji-1">
-            💙
-          </div>
-
-          <div className="floating-emoji emoji-2">
-            ✨
-          </div>
-
-          <div className="floating-emoji emoji-3">
-            🎈
-          </div>
-
-          <div className="floating-emoji emoji-4">
-            💫
-          </div>
 
           <div className="welcome-card">
 
@@ -185,18 +248,6 @@ function App() {
           >
             ← Back
           </button>
-
-          <div className="question-particle particle-1">
-            ✨
-          </div>
-
-          <div className="question-particle particle-2">
-            💙
-          </div>
-
-          <div className="question-particle particle-3">
-            🎀
-          </div>
 
           <div className="question-card">
 
@@ -314,7 +365,7 @@ function App() {
             </p>
 
             <h1>
-              Happy Birthday Baby! 🎈
+              Happy Birthday Girl ! 🎈
             </h1>
 
             <p>
@@ -422,7 +473,7 @@ function App() {
 
               <button
                 className="gift-item"
-                onClick={() => setScreen("final")}
+                onClick={() => setScreen("pre-final")}
               >
                 <div className="gift-item-icon">
                   🎁
@@ -446,7 +497,7 @@ function App() {
 
 
       {/* =================================================
-          QUIZ SCREEN
+          DYNAMIC QUIZ SCREEN
       ================================================= */}
 
       {screen === "quiz" && (
@@ -469,11 +520,11 @@ function App() {
             </div>
 
             <p className="quiz-progress">
-              💗 Birthday Quiz
+              💗 Question {currentQuizIndex + 1} of {quizQuestions.length}
             </p>
 
             <h1>
-              How well do you know me? 👀
+              {quizQuestions[currentQuizIndex].question}
             </h1>
 
             <p className="question-description">
@@ -481,29 +532,58 @@ function App() {
             </p>
 
             <div className="quiz-options">
+              {quizQuestions[currentQuizIndex].options.map((option, idx) => {
+                let customStyle = {};
+                let badgeText = "";
 
-              <button
-                className="quiz-option"
-                onClick={() => answerQuiz(true)}
-              >
-                💙 You know me really well
-              </button>
+                if (isAnswered) {
+                  if (option.correct) {
+                    customStyle = {
+                      backgroundColor: "#2e7d32",
+                      color: "#ffffff",
+                      borderColor: "#1b5e20"
+                    };
+                    badgeText = "✓ Correct";
+                  } else if (idx === selectedOption) {
+                    customStyle = {
+                      backgroundColor: "#d32f2f",
+                      color: "#ffffff",
+                      borderColor: "#b71c1c"
+                    };
+                    badgeText = "✗ Wrong";
+                  }
+                }
 
-              <button
-                className="quiz-option"
-                onClick={() => answerQuiz(false)}
-              >
-                😭 Maybe I need to give you hints
-              </button>
-
-              <button
-                className="quiz-option"
-                onClick={() => answerQuiz(false)}
-              >
-                😂 I'm just here for the fun
-              </button>
-
+                return (
+                  <button
+                    key={idx}
+                    className="quiz-option"
+                    style={customStyle}
+                    onClick={() => handleOptionClick(idx, option.correct)}
+                    disabled={isAnswered}
+                  >
+                    <span>{option.text}</span>
+                    {isAnswered && badgeText && (
+                      <span className="feedback-badge" style={{ marginLeft: "auto", fontWeight: "bold" }}>
+                        {badgeText}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
+
+            {isAnswered && (
+              <button
+                className="start-button next-question-btn"
+                onClick={handleNextQuestion}
+                style={{ marginTop: "20px", width: "100%" }}
+              >
+                {currentQuizIndex < quizQuestions.length - 1
+                  ? "Next Question →"
+                  : "See Results 🏆"}
+              </button>
+            )}
 
           </div>
 
@@ -512,7 +592,7 @@ function App() {
 
 
       {/* =================================================
-          QUIZ RESULT
+          QUIZ RESULT SCREEN
       ================================================= */}
 
       {screen === "result" && (
@@ -543,7 +623,7 @@ function App() {
             </h1>
 
             <p className="result-score">
-              Your Score: {quizScore} 💗
+              Your Score: {quizScore} / {quizQuestions.length} 💗
             </p>
 
             <p className="result-message">
@@ -629,7 +709,7 @@ function App() {
               </p>
 
               <p className="letter-signature">
-                — Your Best Friend Usman💙
+                — Your Best Friend 💙
               </p>
 
             </div>
@@ -641,7 +721,7 @@ function App() {
 
 
       {/* =================================================
-          JOURNEY SCREEN - 5 PHOTOS
+          JOURNEY SCREEN
       ================================================= */}
 
       {screen === "journey" && (
@@ -674,17 +754,12 @@ function App() {
 
             <div className="journey-gallery">
 
-              {/* PHOTO 1 */}
-
               <div className="journey-photo">
                 <img
                   src="/journey1.jpg"
                   alt="Memory 01"
                 />
               </div>
-
-
-              {/* PHOTO 2 */}
 
               <div className="journey-photo">
                 <img
@@ -693,9 +768,6 @@ function App() {
                 />
               </div>
 
-
-              {/* PHOTO 3 */}
-
               <div className="journey-photo">
                 <img
                   src="/journey3.jpg"
@@ -703,18 +775,12 @@ function App() {
                 />
               </div>
 
-
-              {/* PHOTO 4 */}
-
               <div className="journey-photo">
                 <img
                   src="/journey4.jpg"
                   alt="Memory 04"
                 />
               </div>
-
-
-              {/* PHOTO 5 */}
 
               <div className="journey-photo">
                 <img
@@ -732,7 +798,67 @@ function App() {
 
 
       {/* =================================================
-          FINAL SURPRISE
+          PRE-FINAL SURPRISE PAGE
+      ================================================= */}
+
+      {screen === "pre-final" && (
+        <section className="pre-final-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="pre-final-card">
+
+            <div className="pre-final-icon">
+              ✨
+            </div>
+
+            <p className="question-small">
+              Before the grand reveal... 💖
+            </p>
+
+            <h1>
+              A Small Special Moment ✨
+            </h1>
+
+            <p className="pre-final-description">
+              Before you open the final Surprise, I wanted to put this Special Memory right here...
+              <br />
+              Because your smile means the world to me! 😊💙
+            </p>
+
+            {/* PICTURE CONTAINER */}
+            <div className="photo-placeholder-box">
+              <img
+                src="/special-photo.jpg"
+                alt="Special Memory"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentNode.innerHTML =
+                    "<div class='photo-placeholder-text'>📸 Place your image at <b>public/special-photo.jpg</b></div>";
+                }}
+              />
+            </div>
+
+            <button
+              className="see-surprise-btn"
+              onClick={() => setScreen("final")}
+            >
+              SEE NEXT SURPRISE 💖
+            </button>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          FINAL SURPRISE (ANIMATION & VIDEO)
       ================================================= */}
 
       {screen === "final" && (

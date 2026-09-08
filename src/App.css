@@ -1570,3 +1570,107 @@ button {
   }
 
 }
+/* ==========================================
+   PRE-FINAL SCREEN STYLES (WITH COLOURS & PERFECT PHOTO FIT)
+========================================== */
+.pre-final-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Main Card Container */
+.pre-final-card {
+  background: #ffffff;
+  padding: 30px 24px;
+  border-radius: 28px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(30, 58, 138, 0.12);
+  border: 2px solid #e0e7ff;
+  margin: 0 auto;
+}
+
+/* Icon Animation */
+.pre-final-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+  display: inline-block;
+  animation: floatIcon 2.5s infinite ease-in-out;
+}
+
+/* Heading with Colorful Deep Blue */
+.pre-final-card h1 {
+  font-size: 22px;
+  color: #1e3a8a;
+  margin: 8px 0;
+  font-weight: 700;
+}
+
+.pre-final-description {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Photo Placeholder Box */
+.photo-placeholder-box {
+  width: 100%;
+  height: 250px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 22px;
+  border: 3px solid #3b82f6; /* Blue Border */
+  background-color: #eff6ff; /* Soft Light Blue Background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-placeholder-text {
+  padding: 20px;
+  color: #3b82f6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Image Automatic Fitting Property */
+.photo-placeholder-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Photo crop/stretch hue bina poori fit aayegi */
+  object-position: center;
+  display: block;
+}
+
+/* SEE NEXT SURPRISE BUTTON WITH GRADIENT COLOR */
+.see-surprise-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.see-surprise-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.45);
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
