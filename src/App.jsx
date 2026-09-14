@@ -880,13 +880,14 @@ function App() {
             <div className="final-video-wrapper">
 
               <video
-                className="final-video"
-                autoPlay 
-                loop
-                muted
-                playsInline
-                preload="auto"
-              >
+  className="final-video"
+  controls
+  loop
+  autoPlay 
+  playsInline
+  preload="auto"
+>
+              
                 <source
                   src="/birthday-video.mp4"
                   type="video/mp4"
