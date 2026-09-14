@@ -1,61 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "./App.css";
+import FloatingEmojis from "./FloatingEmojis";
 
 const quizData = [
   {
     id: 1,
     question: "How well do you know me? 👀",
     options: [
-      { text: "💙 You know me really well", correct: true },
-      { text: "😭 Maybe I need to give you hints", correct: false },
-      { text: "😂 I'm just here for the fun", correct: false }
+      { text: "You know me really well", correct: true },
+      { text: "Maybe I need to give you hints", correct: false },
+      { text: "I'm just here for the fun", correct: false }
     ]
   },
   {
     id: 2,
-    question: "Who is the most special person? 💖",
+    question: "What is my favorite thing to do? ✨",
     options: [
-      { text: "You! 💖", correct: true },
-      { text: "Me 😎", correct: false },
-      { text: "Everyone 🌍", correct: false }
+      { text: "Late night coding & chilling", correct: true },
+      { text: "Sleeping all day", correct: false },
+      { text: "Partying outside", correct: false }
     ]
   },
   {
     id: 3,
-    question: "What makes you happiest? ✨",
+    question: "Which vibe fits us best? 💙",
     options: [
-      { text: "Gifts 🎁", correct: false },
-      { text: "Good Food 🍕", correct: false },
-      { text: "Spending time together ✨", correct: true }
-    ]
-  },
-  {
-    id: 4,
-    question: "What's our favorite thing to do? 💬",
-    options: [
-      { text: "Late night talks & gossip 🌙", correct: true },
-      { text: "Studying hard all day 📚", correct: false },
-      { text: "Fighting over small things 👊", correct: false }
-    ]
-  },
-  {
-    id: 5,
-    question: "How special are you to me? 🌟",
-    options: [
-      { text: "Just a regular friend 🙃", correct: false },
-      { text: "More than words can say! 💙✨", correct: true },
-      { text: "A little bit special 🤏", correct: false }
+      { text: "Best friends forever", correct: true },
+      { text: "Tom & Jerry fights", correct: false },
+      { text: "Quiet & serious", correct: false }
     ]
   }
 ];
 
 function App() {
-  const [screen, setScreen] = useState("quiz");
+  // Screens: 'home' | 'quiz' | 'surprise' | 'letter' | 'gift' | 'video'
+  const [screen, setScreen] = useState("home");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isCorrect, setIsCorrect] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const videoRef = useRef(null);
   const currentQuestion = quizData[currentQuestionIndex];
 
   const handleOptionSelect = (option, idx) => {
@@ -65,7 +50,7 @@ function App() {
       setErrorMessage("");
     } else {
       setIsCorrect(false);
-      setErrorMessage("❌ Wrong answer! Try again to proceed.");
+      setErrorMessage("❌ Wrong answer! Pick the correct option to proceed.");
     }
   };
 
@@ -79,39 +64,44 @@ function App() {
     if (currentQuestionIndex < quizData.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
     } else {
-      setScreen("pre-final");
+      setScreen("surprise");
     }
-  };
-
-  const handleBackToQuiz = () => {
-    setScreen("quiz");
-    setCurrentQuestionIndex(0);
-    setSelectedOption(null);
-    setIsCorrect(false);
-    setErrorMessage("");
   };
 
   return (
     <div className="app-container">
-      {/* QUIZ SCREEN */}
+      <FloatingEmojis />
+
+      {/* SCREEN 1: WELCOME / HOME */}
+      {screen === "home" && (
+        <div className="card-box fade-in">
+          <div className="panda-avatar">
+            <img src="/panda.png" alt="Panda" onError={(e) => (e.target.style.display = "none")} />
+          </div>
+          <h1 className="title">A Very Special Birthday Wish 🎉</h1>
+          <p className="subtitle">
+            Welcome! Ready to unlock your special surprise? Answer a few quick quiz questions!
+          </p>
+          <button className="main-btn" onClick={() => setScreen("quiz")}>
+            Start Quiz 🚀
+          </button>
+        </div>
+      )}
+
+      {/* SCREEN 2: QUIZ */}
       {screen === "quiz" && (
-        <section className="quiz-screen">
-          <p className="question-count">
-            ❤️ Question {currentQuestionIndex + 1} of {quizData.length}
-          </p>
+        <div className="card-box fade-in">
+          <span className="step-tag">
+            Question {currentQuestionIndex + 1} of {quizData.length}
+          </span>
+          <h2 className="question-title">{currentQuestion.question}</h2>
 
-          <h1 className="quiz-title">{currentQuestion.question}</h1>
-          <p className="quiz-subtitle">
-            Choose the answer you think is correct! ✨
-          </p>
-
-          <div className="options-container">
+          <div className="options-list">
             {currentQuestion.options.map((option, idx) => {
               let btnClass = "option-btn";
               if (selectedOption === idx) {
-                btnClass += option.correct ? " correct" : " wrong";
+                btnClass += option.correct ? " selected-correct" : " selected-wrong";
               }
-
               return (
                 <button
                   key={idx}
@@ -126,75 +116,121 @@ function App() {
 
           {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-          <button
-            className="next-button"
-            onClick={handleNextQuestion}
-            disabled={!isCorrect}
-          >
-            Next Question →
-          </button>
-        </section>
-      )}
-
-      {/* PRE-FINAL / LETTER SCREEN */}
-      {screen === "pre-final" && (
-        <section className="pre-final-screen">
-          <div className="special-card">
-            <h2>You Made It! 🎉</h2>
-            <img
-              src="/special-photo.jpg"
-              alt="Special Memory"
-              className="special-img"
-            />
-            <p>Ready for the main surprise?</p>
-
-            <div className="button-group">
-              <button className="back-btn" onClick={handleBackToQuiz}>
-                ← Back to Quiz
-              </button>
+          <div className="nav-buttons">
+            {currentQuestionIndex > 0 ? (
               <button
-                className="final-btn"
-                onClick={() => setScreen("final")}
+                className="secondary-btn"
+                onClick={() => {
+                  setCurrentQuestionIndex((prev) => prev - 1);
+                  setSelectedOption(null);
+                  setIsCorrect(false);
+                  setErrorMessage("");
+                }}
               >
-                See Final Surprise ❤️
+                ← Back
               </button>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* FINAL SURPRISE SCREEN */}
-      {screen === "final" && (
-        <section className="final-screen">
-          <div className="final-card">
-            <h1 className="forever-title">You Are My Forever ❤️</h1>
-
-            <div className="final-video-wrapper">
-              <video
-                className="final-video"
-                controls
-                playsInline
-                preload="auto"
-              >
-                <source src="/birthday-video.mp4" type="video/mp4" />
-                Your browser does not support the video.
-              </video>
-            </div>
-
-            <p className="final-message">
-              Some memories are simply too special to be forgotten. 💙
-            </p>
-
-            <div className="final-hearts">💙 💙 💙</div>
+            ) : (
+              <button className="secondary-btn" onClick={() => setScreen("home")}>
+                ← Home
+              </button>
+            )}
 
             <button
-              className="back-btn"
-              onClick={() => setScreen("pre-final")}
+              className="next-button"
+              onClick={handleNextQuestion}
+              disabled={!isCorrect}
             >
-              ← Back to Letter
+              {currentQuestionIndex === quizData.length - 1 ? "Finish Quiz ✨" : "Next ➡️"}
             </button>
           </div>
-        </section>
+        </div>
+      )}
+
+      {/* SCREEN 3: SURPRISE RESULT */}
+      {screen === "surprise" && (
+        <div className="card-box fade-in">
+          <div className="surprise-icon">🎉</div>
+          <h2 className="title">Awesome! Quiz Cleared!</h2>
+          <p className="subtitle">
+            You know me so well! Now let's head over to your special letter.
+          </p>
+          <button className="main-btn" onClick={() => setScreen("letter")}>
+            Read Letter 💌
+          </button>
+        </div>
+      )}
+
+      {/* SCREEN 4: LETTER & MEMORIES */}
+      {screen === "letter" && (
+        <div className="card-box fade-in">
+          <h2 className="title">Happy Birthday! 🎂✨</h2>
+          <div className="letter-content">
+            <p>Wishing you a wonderful birthday filled with peace, laughter, and endless success!</p>
+            <p>Thank you for always being such a great person. Stay blessed and keep shining bright!</p>
+          </div>
+
+          <div className="journey-gallery">
+            <img src="/journey1.jpg" alt="Memory 1" onError={(e) => (e.target.style.display = "none")} />
+            <img src="/journey2.jpg" alt="Memory 2" onError={(e) => (e.target.style.display = "none")} />
+            <img src="/journey3.jpg" alt="Memory 3" onError={(e) => (e.target.style.display = "none")} />
+          </div>
+
+          <button className="main-btn" onClick={() => setScreen("gift")}>
+            Next: Open Your Gift 🎁
+          </button>
+        </div>
+      )}
+
+      {/* SCREEN 5: GIFT BOX TRANSITION SCREEN (BEFORE VIDEO) */}
+      {screen === "gift" && (
+        <div className="card-box fade-in">
+          <div className="gift-box-icon" onClick={() => setScreen("video")}>
+            🎁
+          </div>
+          <h2 className="title">A Final Surprise Awaits!</h2>
+          <p className="subtitle">
+            Tap the gift box or click the button below to unwrap your special birthday video!
+          </p>
+          
+          <div className="nav-buttons">
+            <button className="secondary-btn" onClick={() => setScreen("letter")}>
+              ← Back to Letter
+            </button>
+            <button className="main-btn" onClick={() => setScreen("video")}>
+              Unwrap Gift 🎬
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* SCREEN 6: FINAL VIDEO */}
+      {screen === "video" && (
+        <div className="card-box fade-in">
+          <h2 className="title">Special Video For You 🎥</h2>
+          <div className="video-wrapper">
+            <video ref={videoRef} controls autoPlay playsInline className="final-video">
+              <source src="/birthday-video.mp4" type="video/mp4" />
+              Your browser does not support video playback.
+            </video>
+          </div>
+
+          <div className="nav-buttons">
+            <button className="secondary-btn" onClick={() => setScreen("gift")}>
+              ← Back to Gift
+            </button>
+            <button
+              className="secondary-btn"
+              onClick={() => {
+                setCurrentQuestionIndex(0);
+                setSelectedOption(null);
+                setIsCorrect(false);
+                setScreen("home");
+              }}
+            >
+              Restart 🔄
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
