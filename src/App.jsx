@@ -67,19 +67,17 @@ function App() {
 
     if (option.correct) {
       setIsCorrect(true);
-      setErrorMessage(""); // Error text clear
+      setErrorMessage(""); 
     } else {
-      setIsCorrect(false); // Aage badhna block kar diya
+      setIsCorrect(false); 
       setErrorMessage("❌ Wrong answer! Try again to proceed.");
     }
   };
 
   // Next question handler
   const handleNextQuestion = () => {
-    // Agar sahi answer nahi hai, toh aage nahi jane dena
     if (!isCorrect) return;
 
-    // Reset state for next question
     setSelectedOption(null);
     setIsCorrect(false);
     setErrorMessage("");
@@ -93,7 +91,13 @@ function App() {
 
   const goBack = () => {
     if (screen === "final") setScreen("pre-final");
-    else if (screen === "pre-final") setScreen("quiz");
+    else if (screen === "pre-final") {
+      setScreen("quiz");
+      setCurrentQuestionIndex(0);
+      setSelectedOption(null);
+      setIsCorrect(false);
+      setErrorMessage("");
+    }
   };
 
   return (
@@ -114,7 +118,6 @@ function App() {
             {currentQuestion.options.map((option, idx) => {
               let btnClass = "option-btn";
 
-              // Jab option select ho, toh sahi ko green aur galat ko red karein
               if (selectedOption === idx) {
                 btnClass += option.correct ? " correct" : " wrong";
               }
@@ -133,10 +136,8 @@ function App() {
             })}
           </div>
 
-          {/* Galat jawāb par alert message */}
           {errorMessage && <p className="error-text">{errorMessage}</p>}
 
-          {/* Sahi jawāb hone par hi next enabled hoga */}
           <button
             className="next-button"
             onClick={handleNextQuestion}
@@ -151,12 +152,13 @@ function App() {
         </section>
       )}
 
-      {/* ================= PRE-FINAL SCREEN ================= */}
+      {/* ================= PRE-FINAL / LETTER SCREEN ================= */}
       {screen === "pre-final" && (
         <section className="pre-final-screen">
           <button className="back-button" onClick={goBack}>
             ← Back
           </button>
+
           <div className="special-card">
             <h2>You Made It! 🎉</h2>
             <img
@@ -165,9 +167,15 @@ function App() {
               className="special-img"
             />
             <p>Ready for the main surprise?</p>
-            <button className="final-btn" onClick={() => setScreen("final")}>
-              See Final Surprise ❤️
-            </button>
+
+            <div className="button-group" style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "15px" }}>
+              <button className="back-btn" onClick={goBack} style={{ padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ccc" }}>
+                ← Back to Quiz
+              </button>
+              <button className="final-btn" onClick={() => setScreen("final")} style={{ padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ff4b72", color: "white" }}>
+                See Final Surprise ❤️
+              </button>
+            </div>
           </div>
         </section>
       )}
@@ -199,6 +207,14 @@ function App() {
             </p>
 
             <div className="final-hearts">💙 💙 💙</div>
+
+            <button 
+              className="back-btn" 
+              onClick={() => setScreen("pre-final")} 
+              style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ccc" }}
+            >
+              ← Back to Letter
+            </button>
           </div>
         </section>
       )}
