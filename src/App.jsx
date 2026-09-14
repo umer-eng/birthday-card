@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import FloatingEmojis from "./FloatingEmojis";
 import "./App.css";
 
-// Aapke 5 Quiz Questions
-const quizData = [
+// ==========================================
+// QUIZ DATA ARRAY (5 QUESTIONS)
+// ==========================================
+const quizQuestions = [
   {
     id: 1,
     question: "How well do you know me? 👀",
@@ -51,189 +54,864 @@ const quizData = [
 ];
 
 function App() {
-  const [screen, setScreen] = useState("quiz");
+  const [screen, setScreen] = useState("welcome");
 
-  // Quiz states
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [showNoMessage, setShowNoMessage] = useState(false);
+  const [noStep, setNoStep] = useState(0);
+
+  // Quiz States
+  const [quizScore, setQuizScore] = useState(0);
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [isCorrect, setIsCorrect] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isAnswered, setIsAnswered] = useState(false);
 
-  const currentQuestion = quizData[currentQuestionIndex];
-
-  // Option selection handler
-  const handleOptionSelect = (option, idx) => {
-    setSelectedOption(idx);
-
-    if (option.correct) {
-      setIsCorrect(true);
-      setErrorMessage(""); 
-    } else {
-      setIsCorrect(false); 
-      setErrorMessage("❌ Wrong answer! Try again to proceed.");
-    }
-  };
-
-  // Next question handler
-  const handleNextQuestion = () => {
-    if (!isCorrect) return;
-
-    setSelectedOption(null);
-    setIsCorrect(false);
-    setErrorMessage("");
-
-    if (currentQuestionIndex < quizData.length - 1) {
-      setCurrentQuestionIndex((prev) => prev + 1);
-    } else {
-      setScreen("pre-final");
-    }
-  };
+  /* =========================
+     BACK BUTTON
+  ========================= */
 
   const goBack = () => {
-    if (screen === "final") setScreen("pre-final");
-    else if (screen === "pre-final") {
-      setScreen("quiz");
-      setCurrentQuestionIndex(0);
-      setSelectedOption(null);
-      setIsCorrect(false);
-      setErrorMessage("");
+    switch (screen) {
+      case "question":
+        setScreen("welcome");
+        break;
+
+      case "ready":
+        setScreen("question");
+        break;
+
+      case "gifts":
+        setScreen("ready");
+        break;
+
+      case "quiz":
+        setScreen("gifts");
+        break;
+
+      case "result":
+        setScreen("quiz");
+        break;
+
+      case "letter":
+        setScreen("gifts");
+        break;
+
+      case "journey":
+        setScreen("gifts");
+        break;
+
+      case "pre-final":
+        setScreen("gifts");
+        break;
+
+      case "final":
+        setScreen("pre-final");
+        break;
+
+      default:
+        setScreen("welcome");
     }
   };
 
+
+  /* =========================
+     WELCOME
+  ========================= */
+
+  const startSurprise = () => {
+    setScreen("question");
+    setShowNoMessage(false);
+    setNoStep(0);
+  };
+
+
+  /* =========================
+     QUESTION
+  ========================= */
+
+  const chooseYes = () => {
+    setScreen("ready");
+  };
+
+  const chooseNo = () => {
+    setShowNoMessage(true);
+
+    setNoStep((previous) => {
+      if (previous < 2) {
+        return previous + 1;
+      }
+
+      return previous;
+    });
+  };
+
+
+  /* =========================
+     BIRTHDAY
+  ========================= */
+
+  const openGifts = () => {
+    setScreen("gifts");
+  };
+
+
+  /* =========================
+     DYNAMIC QUIZ HANDLERS
+  ========================= */
+
+  const startQuiz = () => {
+    setQuizScore(0);
+    setCurrentQuizIndex(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setScreen("quiz");
+  };
+
+  const handleOptionClick = (index, isCorrect) => {
+    if (isAnswered) return;
+
+    setSelectedOption(index);
+    setIsAnswered(true);
+
+    if (isCorrect) {
+      setQuizScore((prev) => prev + 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuizIndex < quizQuestions.length - 1) {
+      setCurrentQuizIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+    } else {
+      setScreen("result");
+    }
+  };
+
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", boxSizing: "border-box", padding: "20px" }}>
-      
-      {/* ================= QUIZ SCREEN ================= */}
-      {screen === "quiz" && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
-          <p style={{ color: "#ff4b72", fontWeight: "bold", marginBottom: "8px", fontSize: "14px" }}>
-            ❤️ Question {currentQuestionIndex + 1} of {quizData.length}
-          </p>
+    <div className="birthday-app" style={{ position: "relative" }}>
 
-          <h1 style={{ fontSize: "22px", color: "#222", marginBottom: "8px", fontWeight: "bold" }}>{currentQuestion.question}</h1>
-          <p style={{ fontSize: "13px", color: "#666", marginBottom: "20px" }}>
-            Choose the answer you think is correct! ✨
-          </p>
+      {/* Dynamic Background Floating Emojis */}
+      <FloatingEmojis />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", marginBottom: "15px" }}>
-            {currentQuestion.options.map((option, idx) => {
-              let bg = "#f5f5f5";
-              let border = "#e0e0e0";
-              let color = "#333";
 
-              if (selectedOption === idx) {
-                if (option.correct) {
-                  bg = "#28a745";
-                  border = "#28a745";
-                  color = "#ffffff";
-                } else {
-                  bg = "#ff4d4d";
-                  border = "#ff4d4d";
-                  color = "#ffffff";
-                }
-              }
+      {/* =================================================
+          WELCOME SCREEN
+      ================================================= */}
 
-              return (
-                <button
-                  key={idx}
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: "12px",
-                    border: `2px solid ${border}`,
-                    backgroundColor: bg,
-                    color: color,
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    textAlign: "center",
-                    width: "100%"
-                  }}
-                  onClick={() => handleOptionSelect(option, idx)}
-                >
-                  {option.text}
-                  {selectedOption === idx &&
-                    (option.correct ? " ✓ Correct!" : " ❌ Wrong")}
-                </button>
-              );
-            })}
+      {screen === "welcome" && (
+        <section className="welcome-screen">
+
+          <div className="welcome-card">
+
+            <div className="gift-icon">
+              🎁
+            </div>
+
+            <p className="subtitle">
+              A little surprise for you...
+            </p>
+
+            <h1>
+              Hey Birthday Girl! 🎂
+            </h1>
+
+            <p className="description">
+              I made something special just for you.
+              <br />
+              Are you ready to see it? 👀
+            </p>
+
+            <button
+              className="start-button"
+              onClick={startSurprise}
+            >
+              Open Your Surprise 🎁
+            </button>
+
           </div>
 
-          {errorMessage && <p style={{ color: "#ff4d4d", fontWeight: "bold", fontSize: "13px", marginBottom: "15px" }}>{errorMessage}</p>}
+        </section>
+      )}
+
+
+      {/* =================================================
+          QUESTION SCREEN
+      ================================================= */}
+
+      {screen === "question" && (
+        <section className="question-screen">
 
           <button
-            onClick={handleNextQuestion}
-            disabled={!isCorrect}
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "12px",
-              border: "none",
-              backgroundColor: "#ff4b72",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "15px",
-              opacity: isCorrect ? 1 : 0.5,
-              cursor: isCorrect ? "pointer" : "not-allowed"
-            }}
+            className="back-button"
+            onClick={goBack}
           >
-            Next Question →
+            ← Back
           </button>
-        </div>
-      )}
 
-      {/* ================= PRE-FINAL / LETTER SCREEN ================= */}
-      {screen === "pre-final" && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
-          <h2 style={{ color: "#222", marginBottom: "15px" }}>You Made It! 🎉</h2>
-          <img
-            src="/special-photo.jpg"
-            alt="Special Memory"
-            style={{ width: "100%", maxHeight: "250px", objectFit: "cover", borderRadius: "12px", marginBottom: "15px" }}
-          />
-          <p style={{ color: "#666", marginBottom: "20px", fontSize: "14px" }}>Ready for the main surprise?</p>
+          <div className="question-card">
 
-          <div style={{ display: "flex", gap: "10px", width: "100%" }}>
-            <button onClick={goBack} style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#e0e0e0", color: "#333", fontWeight: "bold", fontSize: "13px" }}>
-              ← Back to Quiz
-            </button>
-            <button onClick={() => setScreen("final")} style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#ff4b72", color: "white", fontWeight: "bold", fontSize: "13px" }}>
-              See Final Surprise ❤️
-            </button>
+            <div className="question-emoji">
+              👀
+            </div>
+
+            <p className="question-small">
+              Before we continue...
+            </p>
+
+            {!showNoMessage ? (
+              <>
+                <h1>
+                  Are you ready
+                  <br />
+                  for your birthday surprise? 🎁
+                </h1>
+
+                <p className="question-description">
+                  There might be a few little surprises
+                  waiting for you. ✨
+                </p>
+              </>
+            ) : (
+              <>
+                {noStep === 1 && (
+                  <>
+                    <h1>
+                      Wait, you said no? 😭
+                    </h1>
+
+                    <p className="question-description">
+                      Are you really sure about that? 👀
+                    </p>
+                  </>
+                )}
+
+                {noStep >= 2 && (
+                  <>
+                    <h1>
+                      Don't you want your gift? 😡🎁
+                    </h1>
+
+                    <p className="question-description">
+                      Come on... give the surprise a chance! 🥺
+                    </p>
+                  </>
+                )}
+              </>
+            )}
+
+            <div className="answer-buttons">
+
+              <button
+                className={`yes-button ${
+                  noStep >= 2 ? "yes-big" : ""
+                }`}
+                onClick={chooseYes}
+              >
+                YES! 💙
+              </button>
+
+              {noStep < 2 && (
+                <button
+                  className="no-button"
+                  onClick={chooseNo}
+                >
+                  NO 😭
+                </button>
+              )}
+
+            </div>
+
+            {showNoMessage && (
+              <div className="no-message">
+
+                {noStep === 1 &&
+                  "The surprise is still waiting for you! 🎁"}
+
+                {noStep >= 2 &&
+                  "Okay okay... YES button is calling you! 😭💙"}
+
+              </div>
+            )}
+
           </div>
-        </div>
+
+        </section>
       )}
 
-      {/* ================= FINAL SURPRISE (ANIMATION & VIDEO) ================= */}
-      {screen === "final" && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
-          <h1 style={{ color: "#ff4b72", fontSize: "20px", marginBottom: "15px", fontWeight: "bold" }}>You Are My Forever ❤️</h1>
 
-          <div style={{ width: "100%", borderRadius: "12px", overflow: "hidden", marginBottom: "15px" }}>
-            <video
-              controls
-              playsInline
-              preload="auto"
-              style={{ width: "100%", borderRadius: "12px", display: "block" }}
+      {/* =================================================
+          READY / BIRTHDAY SCREEN
+      ================================================= */}
+
+      {screen === "ready" && (
+        <section className="ready-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="ready-card">
+
+            <div className="ready-emoji">
+              🎉
+            </div>
+
+            <p className="question-small">
+              That's the spirit! 💙
+            </p>
+
+            <h1>
+              Happy Birthday Girl ! 🎈
+            </h1>
+
+            <p>
+              Today is all about celebrating you. ✨
+              <br />
+              And I have a few surprises waiting...
+            </p>
+
+            <button
+              className="start-button"
+              onClick={openGifts}
             >
-              <source src="/birthday-video.mp4" type="video/mp4" />
-              Your browser does not support the video.
-            </video>
+              OPEN YOUR GIFTS 🎁
+            </button>
+
           </div>
 
-          <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px" }}>
-            Some memories are simply too special to be forgotten. 💙
-          </p>
-
-          <div style={{ marginBottom: "15px" }}>💙 💙 💙</div>
-
-          <button 
-            onClick={() => setScreen("pre-final")} 
-            style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#e0e0e0", color: "#333", fontWeight: "bold", fontSize: "13px" }}
-          >
-            ← Back to Letter
-          </button>
-        </div>
+        </section>
       )}
+
+
+      {/* =================================================
+          GIFTS SCREEN
+      ================================================= */}
+
+      {screen === "gifts" && (
+        <section className="gifts-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="gifts-card">
+
+            <p className="question-small">
+              A few things made just for you 💙
+            </p>
+
+            <h1>
+              Birthday Treats for You 🎁
+            </h1>
+
+            <p className="gifts-subtitle">
+              Pick whichever surprise you want to explore first. ✨
+            </p>
+
+            <div className="gift-options">
+
+              <button
+                className="gift-item"
+                onClick={startQuiz}
+              >
+                <div className="gift-item-icon">
+                  💗
+                </div>
+
+                <h2>
+                  Birthday Quiz
+                </h2>
+
+                <p>
+                  Let's see how well you know me! 👀
+                </p>
+              </button>
+
+
+              <button
+                className="gift-item"
+                onClick={() => setScreen("letter")}
+              >
+                <div className="gift-item-icon">
+                  💌
+                </div>
+
+                <h2>
+                  A Letter
+                </h2>
+
+                <p>
+                  A few words from the heart. 💙
+                </p>
+              </button>
+
+
+              <button
+                className="gift-item"
+                onClick={() => setScreen("journey")}
+              >
+                <div className="gift-item-icon">
+                  🐰
+                </div>
+
+                <h2>
+                  Our Journey
+                </h2>
+
+                <p>
+                  Some memories worth remembering. ✨
+                </p>
+              </button>
+
+
+              <button
+                className="gift-item"
+                onClick={() => setScreen("pre-final")}
+              >
+                <div className="gift-item-icon">
+                  🎁
+                </div>
+
+                <h2>
+                  Final Surprise
+                </h2>
+
+                <p>
+                  One last surprise waiting for you. 💙
+                </p>
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          DYNAMIC QUIZ SCREEN
+      ================================================= */}
+
+      {screen === "quiz" && (
+        <section className="quiz-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="quiz-card">
+
+            <div className="quiz-panda">
+              <img
+                src="/panda.png"
+                alt="Cute panda"
+              />
+            </div>
+
+            <p className="quiz-progress">
+              💗 Question {currentQuizIndex + 1} of {quizQuestions.length}
+            </p>
+
+            <h1>
+              {quizQuestions[currentQuizIndex].question}
+            </h1>
+
+            <p className="question-description">
+              Choose the answer you think is correct! ✨
+            </p>
+
+            <div className="quiz-options">
+              {quizQuestions[currentQuizIndex].options.map((option, idx) => {
+                let customStyle = {};
+                let badgeText = "";
+
+                if (isAnswered) {
+                  if (option.correct) {
+                    customStyle = {
+                      backgroundColor: "#2e7d32",
+                      color: "#ffffff",
+                      borderColor: "#1b5e20"
+                    };
+                    badgeText = "✓ Correct";
+                  } else if (idx === selectedOption) {
+                    customStyle = {
+                      backgroundColor: "#d32f2f",
+                      color: "#ffffff",
+                      borderColor: "#b71c1c"
+                    };
+                    badgeText = "✗ Wrong";
+                  }
+                }
+
+                return (
+                  <button
+                    key={idx}
+                    className="quiz-option"
+                    style={customStyle}
+                    onClick={() => handleOptionClick(idx, option.correct)}
+                    disabled={isAnswered}
+                  >
+                    <span>{option.text}</span>
+                    {isAnswered && badgeText && (
+                      <span className="feedback-badge" style={{ marginLeft: "auto", fontWeight: "bold" }}>
+                        {badgeText}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {isAnswered && (
+              <button
+                className="start-button next-question-btn"
+                onClick={handleNextQuestion}
+                style={{ marginTop: "20px", width: "100%" }}
+              >
+                {currentQuizIndex < quizQuestions.length - 1
+                  ? "Next Question →"
+                  : "See Results 🏆"}
+              </button>
+            )}
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          QUIZ RESULT SCREEN
+      ================================================= */}
+
+      {screen === "result" && (
+        <section className="result-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="result-card">
+
+            <div className="result-panda">
+              <img
+                src="/panda.png"
+                alt="Cute panda"
+              />
+            </div>
+
+            <p className="question-small">
+              Quiz Complete! 🎉
+            </p>
+
+            <h1>
+              You did it! 💙
+            </h1>
+
+            <p className="result-score">
+              Your Score: {quizScore} / {quizQuestions.length} 💗
+            </p>
+
+            <p className="result-message">
+              No matter what your score was,
+              you are still an important part of
+              this little birthday surprise. ✨
+            </p>
+
+            <button
+              className="start-button"
+              onClick={() => setScreen("gifts")}
+            >
+              BACK TO GIFTS 🎁
+            </button>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          LETTER SCREEN
+      ================================================= */}
+
+      {screen === "letter" && (
+        <section className="letter-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="letter-card">
+
+            <div className="letter-icon">
+              💌
+            </div>
+
+            <p className="question-small">
+              A little something from the heart...
+            </p>
+
+            <h1>
+              To My Best Friend 💙
+            </h1>
+
+            <div className="letter-content">
+
+              <p>
+                Sometimes you meet someone and slowly
+                realize that they have become a really
+                special part of your life.
+              </p>
+
+              <p>
+                You are one of those people for me.
+                Through all the random conversations,
+                silly moments, laughs and memories,
+                you've made so many ordinary days
+                feel a little more special.
+              </p>
+
+              <p>
+                I hope this birthday brings you
+                countless reasons to smile, lots of
+                happiness and many beautiful memories
+                that you can look back on someday.
+              </p>
+
+              <p>
+                Thank you for being such a wonderful
+                friend and for being someone I can
+                always share a good moment with.
+              </p>
+
+              <p className="letter-ending">
+                Happy Birthday! 🎂✨
+                <br />
+                Keep smiling and keep being you. 💙
+              </p>
+
+              <p className="letter-signature">
+                — Your Best Friend Usman 💙
+              </p>
+
+            </div>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          JOURNEY SCREEN
+      ================================================= */}
+
+      {screen === "journey" && (
+        <section className="journey-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="journey-card">
+
+            <div className="journey-icon">
+              🐰
+            </div>
+
+            <p className="question-small">
+              Little memories...
+            </p>
+
+            <h1>
+              Our Journey ✨
+            </h1>
+
+            <p>
+              Five little moments, five beautiful memories. 💙
+            </p>
+
+            <div className="journey-gallery">
+
+              <div className="journey-photo">
+                <img
+                  src="/journey1.jpg"
+                  alt="Memory 01"
+                />
+              </div>
+
+              <div className="journey-photo">
+                <img
+                  src="/journey2.jpg"
+                  alt="Memory 02"
+                />
+              </div>
+
+              <div className="journey-photo">
+                <img
+                  src="/journey3.jpg"
+                  alt="Memory 03"
+                />
+              </div>
+
+              <div className="journey-photo">
+                <img
+                  src="/journey4.jpg"
+                  alt="Memory 04"
+                />
+              </div>
+
+              <div className="journey-photo">
+                <img
+                  src="/journey5.jpg"
+                  alt="Memory 05"
+                />
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          PRE-FINAL SURPRISE PAGE
+      ================================================= */}
+
+      {screen === "pre-final" && (
+        <section className="pre-final-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="pre-final-card">
+
+            <div className="pre-final-icon">
+              ✨
+            </div>
+
+            <p className="question-small">
+              Before the grand reveal... 💖
+            </p>
+
+            <h1>
+              A Small Special Moment ✨
+            </h1>
+
+            <p className="pre-final-description">
+              Before you open the final Surprise, I wanted to put this Special Memory right here...
+              <br />
+              Because your smile means the world to me! 😊💙
+            </p>
+
+            {/* PICTURE CONTAINER */}
+            <div className="photo-placeholder-box">
+              <img
+                src="/special-photo.jpg"
+                alt="Special Memory"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.parentNode.innerHTML =
+                    "<div class='photo-placeholder-text'>📸 Place your image at <b>public/special-photo.jpg</b></div>";
+                }}
+              />
+            </div>
+
+            <button
+              className="see-surprise-btn"
+              onClick={() => setScreen("final")}
+            >
+              SEE NEXT SURPRISE 💖
+            </button>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* =================================================
+          FINAL SURPRISE (ANIMATION & VIDEO)
+      ================================================= */}
+
+      {screen === "final" && (
+        <section className="final-screen">
+
+          <button
+            className="back-button"
+            onClick={goBack}
+          >
+            ← Back
+          </button>
+
+          <div className="final-card">
+
+            <h1 className="forever-title">
+              You Are My Forever ❤️
+            </h1>
+
+            <div className="final-video-wrapper">
+
+              <video
+  className="final-video"
+  controls
+  loop
+  autoPlay 
+  playsInline
+  preload="auto"
+>
+              
+                <source
+                  src="/birthday-video.mp4"
+                  type="video/mp4"
+                />
+
+                Your browser does not support the video.
+              </video>
+
+            </div>
+
+            <p className="final-message">
+              Some memories are simply too special
+              to be forgotten. 💙
+            </p>
+
+            <div className="final-hearts">
+              💙 💙 💙
+            </div>
+
+          </div>
+
+        </section>
+      )}
+
     </div>
   );
 }
