@@ -101,31 +101,53 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100vw", boxSizing: "border-box", padding: "20px" }}>
+      
       {/* ================= QUIZ SCREEN ================= */}
       {screen === "quiz" && (
-        <section className="quiz-screen">
-          <p className="question-count">
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
+          <p style={{ color: "#ff4b72", fontWeight: "bold", marginBottom: "8px", fontSize: "14px" }}>
             ❤️ Question {currentQuestionIndex + 1} of {quizData.length}
           </p>
 
-          <h1 className="quiz-title">{currentQuestion.question}</h1>
-          <p className="quiz-subtitle">
+          <h1 style={{ fontSize: "22px", color: "#222", marginBottom: "8px", fontWeight: "bold" }}>{currentQuestion.question}</h1>
+          <p style={{ fontSize: "13px", color: "#666", marginBottom: "20px" }}>
             Choose the answer you think is correct! ✨
           </p>
 
-          <div className="options-container">
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", width: "100%", marginBottom: "15px" }}>
             {currentQuestion.options.map((option, idx) => {
-              let btnClass = "option-btn";
+              let bg = "#f5f5f5";
+              let border = "#e0e0e0";
+              let color = "#333";
 
               if (selectedOption === idx) {
-                btnClass += option.correct ? " correct" : " wrong";
+                if (option.correct) {
+                  bg = "#28a745";
+                  border = "#28a745";
+                  color = "#ffffff";
+                } else {
+                  bg = "#ff4d4d";
+                  border = "#ff4d4d";
+                  color = "#ffffff";
+                }
               }
 
               return (
                 <button
                   key={idx}
-                  className={btnClass}
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: "12px",
+                    border: `2px solid ${border}`,
+                    backgroundColor: bg,
+                    color: color,
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    width: "100%"
+                  }}
                   onClick={() => handleOptionSelect(option, idx)}
                 >
                   {option.text}
@@ -136,87 +158,81 @@ function App() {
             })}
           </div>
 
-          {errorMessage && <p className="error-text">{errorMessage}</p>}
+          {errorMessage && <p style={{ color: "#ff4d4d", fontWeight: "bold", fontSize: "13px", marginBottom: "15px" }}>{errorMessage}</p>}
 
           <button
-            className="next-button"
             onClick={handleNextQuestion}
             disabled={!isCorrect}
             style={{
+              width: "100%",
+              padding: "12px",
+              borderRadius: "12px",
+              border: "none",
+              backgroundColor: "#ff4b72",
+              color: "white",
+              fontWeight: "bold",
+              fontSize: "15px",
               opacity: isCorrect ? 1 : 0.5,
               cursor: isCorrect ? "pointer" : "not-allowed"
             }}
           >
             Next Question →
           </button>
-        </section>
+        </div>
       )}
 
       {/* ================= PRE-FINAL / LETTER SCREEN ================= */}
       {screen === "pre-final" && (
-        <section className="pre-final-screen">
-          <button className="back-button" onClick={goBack}>
-            ← Back
-          </button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
+          <h2 style={{ color: "#222", marginBottom: "15px" }}>You Made It! 🎉</h2>
+          <img
+            src="/special-photo.jpg"
+            alt="Special Memory"
+            style={{ width: "100%", maxHeight: "250px", objectFit: "cover", borderRadius: "12px", marginBottom: "15px" }}
+          />
+          <p style={{ color: "#666", marginBottom: "20px", fontSize: "14px" }}>Ready for the main surprise?</p>
 
-          <div className="special-card">
-            <h2>You Made It! 🎉</h2>
-            <img
-              src="/special-photo.jpg"
-              alt="Special Memory"
-              className="special-img"
-            />
-            <p>Ready for the main surprise?</p>
-
-            <div className="button-group" style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "15px" }}>
-              <button className="back-btn" onClick={goBack} style={{ padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ccc" }}>
-                ← Back to Quiz
-              </button>
-              <button className="final-btn" onClick={() => setScreen("final")} style={{ padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ff4b72", color: "white" }}>
-                See Final Surprise ❤️
-              </button>
-            </div>
+          <div style={{ display: "flex", gap: "10px", width: "100%" }}>
+            <button onClick={goBack} style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#e0e0e0", color: "#333", fontWeight: "bold", fontSize: "13px" }}>
+              ← Back to Quiz
+            </button>
+            <button onClick={() => setScreen("final")} style={{ flex: 1, padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#ff4b72", color: "white", fontWeight: "bold", fontSize: "13px" }}>
+              See Final Surprise ❤️
+            </button>
           </div>
-        </section>
+        </div>
       )}
 
       {/* ================= FINAL SURPRISE (ANIMATION & VIDEO) ================= */}
       {screen === "final" && (
-        <section className="final-screen">
-          <button className="back-button" onClick={goBack}>
-            ← Back
-          </button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "420px", padding: "25px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 30px rgba(0,0,0,0.12)", textAlign: "center" }}>
+          <h1 style={{ color: "#ff4b72", fontSize: "20px", marginBottom: "15px", fontWeight: "bold" }}>You Are My Forever ❤️</h1>
 
-          <div className="final-card">
-            <h1 className="forever-title">You Are My Forever ❤️</h1>
-
-            <div className="final-video-wrapper">
-              <video
-                className="final-video"
-                controls
-                playsInline
-                preload="auto"
-              >
-                <source src="/birthday-video.mp4" type="video/mp4" />
-                Your browser does not support the video.
-              </video>
-            </div>
-
-            <p className="final-message">
-              Some memories are simply too special to be forgotten. 💙
-            </p>
-
-            <div className="final-hearts">💙 💙 💙</div>
-
-            <button 
-              className="back-btn" 
-              onClick={() => setScreen("pre-final")} 
-              style={{ marginTop: "20px", padding: "10px 15px", borderRadius: "8px", border: "none", cursor: "pointer", backgroundColor: "#ccc" }}
+          <div style={{ width: "100%", borderRadius: "12px", overflow: "hidden", marginBottom: "15px" }}>
+            <video
+              controls
+              playsInline
+              preload="auto"
+              style={{ width: "100%", borderRadius: "12px", display: "block" }}
             >
-              ← Back to Letter
-            </button>
+              <source src="/birthday-video.mp4" type="video/mp4" />
+              Your browser does not support the video.
+            </video>
           </div>
-        </section>
+
+          <p style={{ color: "#555", fontSize: "14px", marginBottom: "10px" }}>
+            Some memories are simply too special to be forgotten. 💙
+          </p>
+
+          <div style={{ marginBottom: "15px" }}>💙 💙 💙</div>
+
+          <button 
+            onClick={() => setScreen("pre-final")} 
+            style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "none", cursor: "pointer", backgroundColor: "#e0e0e0", color: "#333", fontWeight: "bold", fontSize: "13px" }}
+          >
+            ← Back to Letter
+          </button>
+        </div>
       )}
     </div>
   );
