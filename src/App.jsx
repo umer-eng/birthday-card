@@ -95,7 +95,7 @@ function App() {
     <div className="app-container">
       {/* QUIZ SCREEN */}
       {screen === "quiz" && (
-        <div className="quiz-card">
+        <section className="quiz-screen">
           <p className="question-count">
             ❤️ Question {currentQuestionIndex + 1} of {quizData.length}
           </p>
@@ -133,66 +133,68 @@ function App() {
           >
             Next Question →
           </button>
-        </div>
+        </section>
       )}
 
       {/* PRE-FINAL / LETTER SCREEN */}
       {screen === "pre-final" && (
-        <div className="pre-final-card">
-          <h2 className="quiz-title">You Made It! 🎉</h2>
-          <img
-            src="/special-photo.jpg"
-            alt="Special Memory"
-            className="special-img"
-          />
-          <p className="quiz-subtitle">Ready for the main surprise?</p>
+        <section className="pre-final-screen">
+          <div className="special-card">
+            <h2>You Made It! 🎉</h2>
+            <img
+              src="/special-photo.jpg"
+              alt="Special Memory"
+              className="special-img"
+            />
+            <p>Ready for the main surprise?</p>
 
-          <div className="button-group">
-            <button className="back-btn" onClick={handleBackToQuiz}>
-              ← Back to Quiz
-            </button>
-            <button
-              className="next-button"
-              onClick={() => setScreen("final")}
-            >
-              See Final Surprise ❤️
-            </button>
+            <div className="button-group">
+              <button className="back-btn" onClick={handleBackToQuiz}>
+                ← Back to Quiz
+              </button>
+              <button
+                className="final-btn"
+                onClick={() => setScreen("final")}
+              >
+                See Final Surprise ❤️
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
       )}
 
       {/* FINAL SURPRISE SCREEN */}
       {screen === "final" && (
-        <div className="final-card">
-          <h1 className="quiz-title" style={{ color: "#ff4b72" }}>
-            You Are My Forever ❤️
-          </h1>
+        <section className="final-screen">
+          <div className="final-card">
+            <h1 className="forever-title">You Are My Forever ❤️</h1>
 
-          <div className="final-video-wrapper">
-            <video
-              className="final-video"
-              controls
-              playsInline
-              preload="auto"
+            <div className="final-video-wrapper">
+              <video
+                className="final-video"
+                controls
+                playsInline
+                preload="auto"
+              >
+                <source src="/birthday-video.mp4" type="video/mp4" />
+                Your browser does not support the video.
+              </video>
+            </div>
+
+            <p className="final-message">
+              Some memories are simply too special to be forgotten. 💙
+            </p>
+
+            <div className="final-hearts">💙 💙 💙</div>
+
+            <button
+              className="back-btn"
+              onClick={() => setScreen("pre-final")}
             >
-              <source src="/birthday-video.mp4" type="video/mp4" />
-              Your browser does not support the video.
-            </video>
+              ← Back to Letter
+            </button>
           </div>
-
-          <p className="quiz-subtitle">
-            Some memories are simply too special to be forgotten. 💙
-          </p>
-
-          <div style={{ margin: "10px 0" }}>💙 💙 💙</div>
-
-          <button
-            className="back-btn"
-            onClick={() => setScreen("pre-final")}
-          >
-            ← Back to Letter
-          </button>
-        </div>
+        </section>
       )}
     </div>
   );
