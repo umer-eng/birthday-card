@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 
+// Aap ke naye 5 questions
 const quizData = [
   {
     id: 1,
@@ -50,7 +51,9 @@ const quizData = [
 ];
 
 function App() {
-  const [screen, setScreen] = useState("quiz");
+  const [screen, setScreen] = useState("quiz"); // States: 'quiz', 'pre-final', 'final'
+  
+  // Quiz States
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -58,6 +61,7 @@ function App() {
 
   const currentQuestion = quizData[currentQuestionIndex];
 
+  // Option select handler
   const handleOptionSelect = (option, idx) => {
     setSelectedOption(idx);
     if (option.correct) {
@@ -65,12 +69,13 @@ function App() {
       setErrorMessage("");
     } else {
       setIsCorrect(false);
-      setErrorMessage("❌ Wrong answer! Try again to proceed.");
+      setErrorMessage("Oops! Sahi answer choose karo aage badhne ke liye! 😜");
     }
   };
 
+  // Next question handler
   const handleNextQuestion = () => {
-    if (!isCorrect) return;
+    if (!isCorrect) return; // Galat jawab par aage nahi jane dega
 
     setSelectedOption(null);
     setIsCorrect(false);
@@ -83,17 +88,15 @@ function App() {
     }
   };
 
-  const handleBackToQuiz = () => {
-    setScreen("quiz");
-    setCurrentQuestionIndex(0);
-    setSelectedOption(null);
-    setIsCorrect(false);
-    setErrorMessage("");
+  const goBack = () => {
+    if (screen === "final") setScreen("pre-final");
+    else if (screen === "pre-final") setScreen("quiz");
   };
 
   return (
     <div className="app-container">
-      {/* QUIZ SCREEN */}
+      
+      {/* ================= QUIZ SCREEN ================= */}
       {screen === "quiz" && (
         <section className="quiz-screen">
           <p className="question-count">
@@ -101,9 +104,7 @@ function App() {
           </p>
 
           <h1 className="quiz-title">{currentQuestion.question}</h1>
-          <p className="quiz-subtitle">
-            Choose the answer you think is correct! ✨
-          </p>
+          <p className="quiz-subtitle">Choose the answer you think is correct! ✨</p>
 
           <div className="options-container">
             {currentQuestion.options.map((option, idx) => {
@@ -119,6 +120,7 @@ function App() {
                   onClick={() => handleOptionSelect(option, idx)}
                 >
                   {option.text}
+                  {selectedOption === idx && option.correct && " ✓ Correct"}
                 </button>
               );
             })}
@@ -136,46 +138,35 @@ function App() {
         </section>
       )}
 
-      {/* PRE-FINAL / LETTER SCREEN */}
+      {/* ================= PRE-FINAL SCREEN ================= */}
       {screen === "pre-final" && (
         <section className="pre-final-screen">
+          <button className="back-button" onClick={goBack}>
+            ← Back
+          </button>
           <div className="special-card">
             <h2>You Made It! 🎉</h2>
-            <img
-              src="/special-photo.jpg"
-              alt="Special Memory"
-              className="special-img"
-            />
+            <img src="/special-photo.jpg" alt="Special Memory" className="special-img" />
             <p>Ready for the main surprise?</p>
-
-            <div className="button-group">
-              <button className="back-btn" onClick={handleBackToQuiz}>
-                ← Back to Quiz
-              </button>
-              <button
-                className="final-btn"
-                onClick={() => setScreen("final")}
-              >
-                See Final Surprise ❤️
-              </button>
-            </div>
+            <button className="final-btn" onClick={() => setScreen("final")}>
+              See Final Surprise ❤️
+            </button>
           </div>
         </section>
       )}
 
-      {/* FINAL SURPRISE SCREEN */}
+      {/* ================= FINAL SURPRISE (ANIMATION & VIDEO) ================= */}
       {screen === "final" && (
         <section className="final-screen">
+          <button className="back-button" onClick={goBack}>
+            ← Back
+          </button>
+
           <div className="final-card">
             <h1 className="forever-title">You Are My Forever ❤️</h1>
 
             <div className="final-video-wrapper">
-              <video
-                className="final-video"
-                controls
-                playsInline
-                preload="auto"
-              >
+              <video className="final-video" controls playsInline preload="auto">
                 <source src="/birthday-video.mp4" type="video/mp4" />
                 Your browser does not support the video.
               </video>
@@ -186,16 +177,10 @@ function App() {
             </p>
 
             <div className="final-hearts">💙 💙 💙</div>
-
-            <button
-              className="back-btn"
-              onClick={() => setScreen("pre-final")}
-            >
-              ← Back to Letter
-            </button>
           </div>
         </section>
       )}
+
     </div>
   );
 }
