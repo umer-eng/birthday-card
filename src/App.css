@@ -540,3 +540,9 @@ h1 {
   will-change: transform;
   transform: translateZ(0); /* Enables GPU rendering */
 }
+.special-video-player {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+}

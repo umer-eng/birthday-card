@@ -608,7 +608,7 @@ function FinalVideoSection({ goBack }) {
             loop
             controls
             playsInline
-      
+            autoPlay
             preload="auto"
           >
             <source src="/birthday-video.mp4" type="video/mp4" />
