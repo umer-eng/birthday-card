@@ -543,6 +543,7 @@ function App() {
           loop
           playsInline
           controls
+          preload="metadata"
           className="special-video-player"
           onError={(e) => {
             e.target.style.display = "none";
@@ -607,6 +608,7 @@ function FinalVideoSection({ goBack }) {
             loop
             controls
             playsInline
+      
             preload="auto"
           >
             <source src="/birthday-video.mp4" type="video/mp4" />

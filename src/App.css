@@ -534,3 +534,9 @@ h1 {
   max-width: 360px;
   padding: 14px 20px;
 }
+/* Mobile Hardware Acceleration */
+.special-video-player, 
+.pre-final-card {
+  will-change: transform;
+  transform: translateZ(0); /* Enables GPU rendering */
+}
